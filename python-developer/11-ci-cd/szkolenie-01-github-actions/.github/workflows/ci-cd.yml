@@ -1,0 +1,156 @@
+# .github/workflows/ci-cd.yml
+#
+# Kompletny pipeline CI/CD dla aplikacji Django:
+# lint (Ruff) -> testy (matrix Python 3.11/3.12/3.13 + PostgreSQL) -> budowanie obrazu Docker
+# Uruchamiany przy push do main oraz pull requestach do main.
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.12"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ── Job 1: Analiza kodu ──────────────────────────────
+  lint:
+    name: Analiza kodu
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repozytorium
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Instalacja Ruffa
+        run: pip install ruff
+
+      - name: Ruff – linting
+        run: ruff check . --output-format=github
+
+      - name: Ruff – formatowanie
+        run: ruff format --check .
+
+  # ── Job 2: Testy ─────────────────────────────────────
+  test:
+    name: Testy (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    needs: lint
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    services:
+      # Baza danych PostgreSQL dla testów integracyjnych
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: "postgresql://test_user:test_password@localhost:5432/test_db"
+      DJANGO_SETTINGS_MODULE: "config.settings.test"
+      SECRET_KEY: "test-secret-key-only-for-ci"
+
+    steps:
+      - name: Checkout repozytorium
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Pythona ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Instalacja zależności
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Migracje bazy danych
+        run: python manage.py migrate --no-input
+
+      - name: Uruchomienie testów
+        run: |
+          pytest \
+            --cov=src \
+            --cov-report=term-missing \
+            --cov-report=html \
+            --junitxml=report.xml \
+            --tb=short \
+            -v
+
+      - name: Upload raportu z testów
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report-py${{ matrix.python-version }}
+          path: |
+            report.xml
+            htmlcov/
+          retention-days: 7
+
+  # ── Job 3: Budowanie obrazu Docker ───────────────────
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repozytorium
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Logowanie do GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Metadane obrazu
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=raw,value=latest
+
+      - name: Budowanie i pushowanie obrazu
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,8 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: my_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public_html:/usr/share/nginx/html:ro

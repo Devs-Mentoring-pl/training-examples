@@ -1,0 +1,2 @@
+django
+strawberry-graphql-django
