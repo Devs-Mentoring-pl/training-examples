@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Django na AWS Lambda z Mangum
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    MemorySize: 256
+
+Resources:
+  DjangoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_handler.handler
+      CodeUri: .
+      Events:
+        # Catch-all – przekazuje WSZYSTKIE żądania do Django
+        ProxyApi:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+        RootApi:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+      Environment:
+        Variables:
+          DJANGO_SETTINGS_MODULE: myproject.settings
+          # Ustaw bazę danych na DynamoDB lub RDS Proxy
+          # DATABASE_URL: !Ref DatabaseUrl
+
+Outputs:
+  ApiUrl:
+    Description: URL API
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

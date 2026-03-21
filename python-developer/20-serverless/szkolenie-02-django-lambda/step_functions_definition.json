@@ -1,0 +1,21 @@
+{
+  "Comment": "Przetwarzanie zamówienia",
+  "StartAt": "ValidateOrder",
+  "States": {
+    "ValidateOrder": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456:function:validate-order",
+      "Next": "ProcessPayment"
+    },
+    "ProcessPayment": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456:function:process-payment",
+      "Next": "SendConfirmation"
+    },
+    "SendConfirmation": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456:function:send-confirmation",
+      "End": true
+    }
+  }
+}

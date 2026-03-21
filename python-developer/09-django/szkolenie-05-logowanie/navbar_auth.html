@@ -1,0 +1,15 @@
+<!-- Fragment navbar-a z blog/templates/blog/base.html -->
+<!-- Warunkowe wyswietlanie opcji w zaleznosci od stanu autoryzacji -->
+
+<div class="navbar-nav">
+    {% if user.is_authenticated %}
+        <a class="nav-item nav-link" href="{% url 'profile' %}">Profil</a>
+        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="nav-item nav-link btn btn-link">Wyloguj</button>
+        </form>
+    {% else %}
+        <a class="nav-item nav-link" href="{% url 'login' %}">Zaloguj sie</a>
+        <a class="nav-item nav-link" href="{% url 'register' %}">Rejestracja</a>
+    {% endif %}
+</div>

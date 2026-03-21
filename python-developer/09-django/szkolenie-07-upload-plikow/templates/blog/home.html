@@ -1,0 +1,17 @@
+<!-- blog/templates/blog/home.html -- fragment z awatarem autora -->
+
+{% for article in articles %}
+<article class="media content-section">
+    <img class="rounded-circle article-img"
+         src="{{ article.author.profile.image.url }}"
+         alt="Awatar {{ article.author.username }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">{{ article.author }}</a>
+            <small class="text-muted">{{ article.date_posted|date:"d M Y" }}</small>
+        </div>
+        <h2><a class="article-title" href="#">{{ article.title }}</a></h2>
+        <p class="article-content">{{ article.content|truncatewords:30 }}</p>
+    </div>
+</article>
+{% endfor %}

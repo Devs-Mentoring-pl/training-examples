@@ -1,0 +1,8 @@
+{
+    "production": {
+        "app_function": "myapp.app",
+        "aws_region": "eu-central-1",
+        "runtime": "python3.12",
+        "s3_bucket": "my-zappa-deployments"
+    }
+}
