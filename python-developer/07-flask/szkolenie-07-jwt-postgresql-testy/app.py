@@ -7,7 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY", "dev-secret-key-that-is-long-enough-for-hs256"
+)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///users.db"
 )
@@ -48,7 +50,7 @@ def token_required(f):
 
         try:
             payload = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
-            current_user = db.session.get(User, payload["sub"])
+            current_user = db.session.get(User, int(payload["sub"]))
 
             if not current_user:
                 return jsonify({"error": "Użytkownik nie istnieje"}), 401
@@ -100,7 +102,7 @@ def login():
 
     access_token = jwt.encode(
         {
-            "sub": user.id,
+            "sub": str(user.id),
             "username": user.username,
             "type": "access",
             "iat": now,
@@ -112,7 +114,7 @@ def login():
 
     refresh_token = jwt.encode(
         {
-            "sub": user.id,
+            "sub": str(user.id),
             "type": "refresh",
             "iat": now,
             "exp": now + timedelta(days=7),
@@ -141,13 +143,13 @@ def refresh_token():
         if payload.get("type") != "refresh":
             return jsonify({"error": "Nieprawidłowy typ tokenu"}), 401
 
-        user = db.session.get(User, payload["sub"])
+        user = db.session.get(User, int(payload["sub"]))
         if not user:
             return jsonify({"error": "Użytkownik nie istnieje"}), 401
 
         new_access_token = jwt.encode(
             {
-                "sub": user.id,
+                "sub": str(user.id),
                 "username": user.username,
                 "type": "access",
                 "iat": datetime.now(timezone.utc),
