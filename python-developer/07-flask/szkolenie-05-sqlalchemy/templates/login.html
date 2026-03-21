@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Logowanie{% endblock %}
+
+{% block content %}
+<h2>Zaloguj się lub zarejestruj</h2>
+<form action="#" method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">Nazwa użytkownika</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" name="email" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Zaloguj / Zarejestruj</button>
+</form>
+{% endblock %}

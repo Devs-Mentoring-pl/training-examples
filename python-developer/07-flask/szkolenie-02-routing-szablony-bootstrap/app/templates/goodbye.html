@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Do widzenia!{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h1 class="display-4">Do widzenia!</h1>
+            <p class="lead">Mamy nadzieję, że wrócisz!</p>
+            <a href="{{ url_for('welcome.welcome') }}"
+               class="btn btn-outline-primary btn-lg">
+                Wróć na stronę główną
+            </a>
+        </div>
+    </div>
+{% endblock %}
