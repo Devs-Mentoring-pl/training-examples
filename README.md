@@ -12,6 +12,7 @@ Materiały teoretyczne dostępne są osobno w ramach mentoringu.
   - `02-testy-jednostkowe/` — pytest, mockowanie (2 szkolenia)
   - `03-python-zaawansowany/` — dekoratory, wątki, async/await (3 szkolenia)
   - `04-design-principles/` — Factory, Facade, Adapter, Strategy, Observer (3 szkolenia)
+  - `06-sql/` — SQLite + Python (1 szkolenie)
   - `07-flask/` — Flask (7 szkoleń)
   - `08-fastapi/` — FastAPI (5 szkoleń)
   - `09-django/` — Django + DRF (4 szkolenia)
@@ -23,6 +24,7 @@ Materiały teoretyczne dostępne są osobno w ramach mentoringu.
   - `18-kubernetes/` — Minikube, manifesty YAML, Helm (1 szkolenie)
   - `19-graphql/` — Strawberry + Django (1 szkolenie)
   - `20-serverless/` — AWS Lambda (1 szkolenie)
+  - `21-architektura-hexagonalna/` — architektura hexagonalna w Pythonie (1 szkolenie)
 
 ## Jak korzystać
 
