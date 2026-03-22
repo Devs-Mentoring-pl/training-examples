@@ -8,7 +8,7 @@ i przetwarza je asynchronicznie.
 import boto3
 import json
 
-sqs = boto3.client("sqs")
+sqs = boto3.client("sqs", region_name="eu-central-1")
 QUEUE_URL = "https://sqs.eu-central-1.amazonaws.com/123456/my-queue"
 
 
