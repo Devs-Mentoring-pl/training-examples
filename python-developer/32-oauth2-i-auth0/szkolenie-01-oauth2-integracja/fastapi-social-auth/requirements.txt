@@ -1,0 +1,6 @@
+fastapi[standard]
+authlib
+httpx
+PyJWT[crypto]
+python-dotenv
+itsdangerous
