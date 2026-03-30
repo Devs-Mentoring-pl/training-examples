@@ -4,9 +4,11 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import InvalidTokenError, PyJWKClient
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.config import settings
+
+CLAIMS_NAMESPACE = "https://moja-firma.com"
 
 security = HTTPBearer()
 
@@ -24,6 +26,10 @@ class TokenPayload(BaseModel):
     email: str | None = None
     email_verified: bool | None = None
     permissions: list[str] = []      # Z RBAC (wymaga włączenia w dashboardzie Auth0)
+    roles: list[str] = Field(        # Z custom Action (wymaga dodania Action w Auth0)
+        default=[],
+        alias=f"{CLAIMS_NAMESPACE}/roles",
+    )
     scope: str = ""                  # Scopes jako string rozdzielony spacją
     org_id: str | None = None        # Z Auth0 Organizations (jeśli skonfigurowane)
 

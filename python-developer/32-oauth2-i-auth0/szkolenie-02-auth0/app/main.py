@@ -5,6 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import settings
 from app.routers.auth import router as auth_router
+from app.routers.admin import router as admin_router
 from app.routers.documents import router as documents_router
 from app.services.m2m_client import Auth0M2MClient, M2MSettings
 
@@ -15,6 +16,7 @@ app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
 app.include_router(auth_router)
 app.include_router(documents_router)
+app.include_router(admin_router)
 
 
 # --- M2M: przykład wywołania innego serwisu ---

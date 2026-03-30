@@ -36,11 +36,13 @@ uvicorn app.main:app --reload
 
 ### API chronione JWT (Bearer token)
 
-| Endpoint | Wymagane uprawnienie |
-|----------|---------------------|
-| `GET /documents/` | `read:documents` |
-| `POST /documents/` | `write:documents` |
-| `DELETE /documents/{id}` | `delete:documents` |
+| Endpoint | Wymagane uprawnienie/rola |
+|----------|--------------------------|
+| `GET /documents/` | permission `read:documents` |
+| `POST /documents/` | permission `write:documents` |
+| `DELETE /documents/{id}` | permission `delete:documents` |
+| `GET /admin/dashboard` | rola `admin` |
+| `PUT /admin/content/{id}` | rola `admin` lub `editor` |
 | `GET /health` | brak (publiczny) |
 
 ### Machine-to-Machine
@@ -49,9 +51,11 @@ uvicorn app.main:app --reload
 |----------|------|
 | `GET /orders/{id}/inventory` | Wywołuje inny serwis z tokenem M2M |
 
-## RBAC
+## RBAC i role
 
 W dashboardzie Auth0 utwórz permissions (`read:documents`, `write:documents`, `delete:documents`), przypisz je do ról i ról do użytkowników. Bez tego pole `permissions` w JWT będzie puste.
+
+Aby dodać **nazwy ról** do tokena (pole `roles`), utwórz Action w Auth0: Actions → Flows → Login → dodaj Action, który kopiuje `event.authorization.roles` do custom claim `https://moja-firma.com/roles`. Bez tej Action endpointy `/admin/*` nie będą działać.
 
 ## Testowanie Bearer token
 
