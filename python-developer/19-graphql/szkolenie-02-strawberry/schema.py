@@ -2,7 +2,6 @@
 
 import strawberry
 import strawberry_django
-from typing import list
 
 from .types import ArticleType, ArticleInput, ArticlePartialInput, ArticleFilter
 from .permissions import IsAuthenticated
