@@ -1,0 +1,5 @@
+snowflake-connector-python[pandas]
+snowflake-snowpark-python
+pandas
+python-dotenv
+cryptography

@@ -25,6 +25,8 @@ Materiały teoretyczne dostępne są osobno w ramach mentoringu.
   - `19-graphql/` — Strawberry + Django (1 szkolenie)
   - `20-serverless/` — AWS Lambda (1 szkolenie)
   - `21-architektura-hexagonalna/` — architektura hexagonalna w Pythonie (1 szkolenie)
+- `data-engineering/` — rozszerzenie dla backendowców, których rola zahacza o inżynierię danych
+  - `01-snowflake/` — Snowflake: SQL, ładowanie danych, Snowpark, RBAC (5 szkoleń)
 
 ## Jak korzystać
 
